@@ -11,13 +11,31 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pyinstaller
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
 
       - name: Build EXE
-        run: pyinstaller --onefile --windowed --name RecoilAnalyser -m recoil_analyser
+        run: >
+          pyinstaller
+          --onefile
+          --console
+          --name RecoilAnalyser
+          --collect-all paddleocr
+          --collect-all paddle
+          --collect-all ppocr
+          --collect-all imghdr
+          --hidden-import=paddle
+          --hidden-import=paddleocr
+          --hidden-import=ppocr
+          --hidden-import=cv2
+          --hidden-import=numpy
+          --hidden-import=matplotlib
+          recoil_analyser/__main__.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
